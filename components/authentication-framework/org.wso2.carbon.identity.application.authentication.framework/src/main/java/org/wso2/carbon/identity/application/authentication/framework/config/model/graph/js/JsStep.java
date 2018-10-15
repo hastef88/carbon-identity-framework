@@ -87,9 +87,15 @@ public class JsStep extends AbstractJSContextMemberObject {
 
     private AuthenticatedUser getSubject() {
 
+        // Fix ported to 5.6.0 from commit : https://github.com/wso2/carbon-identity-framework/commit/7f0f6db8018a3150694764679b61e6eff3d0c7ae
         if (authenticatedIdp != null) {
             AuthenticatedIdPData idPData = getContext().getCurrentAuthenticatedIdPs().get(authenticatedIdp);
-            return idPData.getUser();
+            if (idPData == null) {
+                idPData = getContext().getPreviousAuthenticatedIdPs().get(authenticatedIdp);
+            }
+            if (idPData != null) {
+                return idPData.getUser();
+            }
         }
         return null;
     }

@@ -216,6 +216,8 @@ public class DefaultStepHandler implements StepHandler {
                     AuthenticatedIdPData authenticatedIdPData = authenticatedIdPs.get(idp);
                     populateStepConfigWithAuthenticationDetails(stepConfig, authenticatedIdPData);
                     stepConfig.setCompleted(true);
+                    // Fix ported to 5.6.0 branch from commit : https://github.com/wso2/carbon-identity-framework/commit/5a900d4a873bd4e08d33aeaab136ef59ecbce393
+                    request.setAttribute(FrameworkConstants.RequestParams.FLOW_STATUS, AuthenticatorFlowStatus.SUCCESS_COMPLETED);
                     return;
                 }
             } else {

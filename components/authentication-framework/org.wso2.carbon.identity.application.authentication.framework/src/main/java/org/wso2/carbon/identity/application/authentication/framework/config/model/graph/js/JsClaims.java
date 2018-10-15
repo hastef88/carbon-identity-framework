@@ -83,8 +83,14 @@ public class JsClaims extends AbstractJSContextMemberObject {
     public void initializeContext(AuthenticationContext context) {
 
         super.initializeContext(context);
-        if (StringUtils.isNotBlank(idp) && getContext().getCurrentAuthenticatedIdPs().containsKey(idp)) {
-            this.authenticatedUser = getContext().getCurrentAuthenticatedIdPs().get(idp).getUser();
+
+        // Fix not yet in master branch
+        if (StringUtils.isNotBlank(idp)) {
+            if (getContext().getCurrentAuthenticatedIdPs().containsKey(idp)) {
+                this.authenticatedUser = getContext().getCurrentAuthenticatedIdPs().get(idp).getUser();
+            } else if (getContext().getPreviousAuthenticatedIdPs().containsKey(idp)) {
+                this.authenticatedUser = getContext().getPreviousAuthenticatedIdPs().get(idp).getUser();
+            }
         }
     }
 
