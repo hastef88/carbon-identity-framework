@@ -265,6 +265,16 @@ public class GraphBasedSequenceHandler extends DefaultStepBasedSequenceHandler i
                 stepNumber++;
             }
             context.setCurrentStep(stepNumber);
+
+            // If not for below segment, the successful flow of basic credentials after a failure attempt will carry forward no claims.
+            if (null != stepConfig.getAuthenticatorList() &&
+                    !stepConfig.getAuthenticatorList().isEmpty() &&
+                    null != stepConfig.getAuthenticatorList().get(0).getIdpNames() &&
+                    !stepConfig.getAuthenticatorList().get(0).getIdpNames().isEmpty() &&
+                    ApplicationConstants.LOCAL_IDP_NAME.equals(stepConfig.getAuthenticatorList().get(0).getIdpNames().get(0))) {
+                stepConfig.setSubjectAttributeStep(true);
+                stepConfig.setSubjectIdentifierStep(true);
+            }
             context.getSequenceConfig().getStepMap().put(stepNumber, stepConfig);
         }
 
