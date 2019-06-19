@@ -61,6 +61,8 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
+import com.ctc.wstx.util.StringUtil;
+
 public class DefaultClaimHandler implements ClaimHandler {
 
     public static final String SERVICE_PROVIDER_SUBJECT_CLAIM_VALUE =
@@ -158,7 +160,6 @@ public class DefaultClaimHandler implements ClaimHandler {
         Map<String, String> spUnfilteredClaims = new HashMap<>();
         Map<String, String> spFilteredClaims = new HashMap<>();
 
-
         // claim mapping from local IDP to remote IDP : local-claim-uri / idp-claim-uri
 
         Map<String, String> localToIdPClaimMap = null;
@@ -169,6 +170,9 @@ public class DefaultClaimHandler implements ClaimHandler {
         if (idPStandardDialect != null || useDefaultIdpDialect) {
             localToIdPClaimMap = getLocalToIdpClaimMappingWithStandardDialect(remoteClaims, idPClaimMappings, context,
                     idPStandardDialect);
+            if (log.isDebugEnabled()) {
+                localToIdPClaimMap.forEach((k,v) -> log.debug("XXX localToIdPClaimMap Key : " + k + " Value : " + v ));
+            }
         } else if (idPClaimMappings.length > 0) {
             localToIdPClaimMap = FrameworkUtils.getClaimMappings(idPClaimMappings, true);
         } else {
@@ -326,6 +330,10 @@ public class DefaultClaimHandler implements ClaimHandler {
                 localUnfilteredClaims.put(localClaimURI, claimValue);
             }
         }
+
+        if (log.isDebugEnabled()) {
+            localUnfilteredClaims.forEach((k,v) -> log.debug("XXX localUnfilteredClaims Key : " + k + " Value : " + v ));
+        }
     }
 
     private Map<String, String> getLocalToIdpClaimMappingWithStandardDialect(Map<String, String> remoteClaims,
@@ -339,6 +347,9 @@ public class DefaultClaimHandler implements ClaimHandler {
         }
 
         try {
+            if (log.isDebugEnabled()) {
+                remoteClaims.forEach((k,v) -> log.debug("XXX remoteClaims Key : " + k + " Value : " + v ));
+            }
             localToIdPClaimMap = getClaimMappings(idPStandardDialect,
                                                   remoteClaims.keySet(), context.getTenantDomain(), true);
         } catch (Exception e) {
@@ -428,6 +439,12 @@ public class DefaultClaimHandler implements ClaimHandler {
         ClaimManager claimManager = getClaimManager(tenantDomain, realm);
 
         UserStoreManager userStore = getUserStoreManager(tenantDomain, realm, authenticatedUser.getUserStoreDomain());
+
+        if (log.isDebugEnabled()) {
+            if (null != authenticatedUser && !StringUtils.isNotEmpty(authenticatedUser.getUserStoreDomain())) {
+                log.debug("XXX authenticatedUser.getUserStoreDomain() : " + authenticatedUser.getUserStoreDomain());
+            }
+        }
 
         // key:value -> carbon_dialect:claim_value
         Map<String, String> allLocalClaims;
@@ -595,6 +612,8 @@ public class DefaultClaimHandler implements ClaimHandler {
             }
             allLocalClaims = userStore.getUserClaimValues(tenantAwareUserName,
                     localClaimURIs.toArray(new String[localClaimURIs.size()]), null);
+
+
 
             if (allLocalClaims != null) {
                 for (Map.Entry<String, String> entry : allLocalClaims.entrySet()) {

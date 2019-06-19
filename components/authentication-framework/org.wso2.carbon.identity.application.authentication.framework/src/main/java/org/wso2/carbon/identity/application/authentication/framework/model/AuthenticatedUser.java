@@ -19,6 +19,8 @@
 package org.wso2.carbon.identity.application.authentication.framework.model;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.identity.application.common.model.ClaimMapping;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
@@ -44,6 +46,7 @@ import java.util.Map;
 public class AuthenticatedUser extends User {
 
     private static final long serialVersionUID = -6919627053686253276L;
+    private static final Log log = LogFactory.getLog(AuthenticatedUser.class);
 
     private String authenticatedSubjectIdentifier;
     private String federatedIdPName;
@@ -113,6 +116,13 @@ public class AuthenticatedUser extends User {
 
         authenticatedUser.setTenantDomain(MultitenantUtils.getTenantDomain(authenticatedSubjectIdentifier));
         authenticatedUser.setAuthenticatedSubjectIdentifier(authenticatedSubjectIdentifier);
+
+        if (log.isDebugEnabled()) {
+            log.debug("XXX AuthenticatedUser username : " + String.valueOf(authenticatedUser.getUserName())
+                    + " userStore :" +  String.valueOf(authenticatedUser.getUserStoreDomain())
+                    + " tenant domain : " + String.valueOf(authenticatedUser.getTenantDomain())
+                    + " authenticatedSubjectIdentifier : " + String.valueOf(authenticatedUser.getAuthenticatedSubjectIdentifier()));
+        }
 
         return authenticatedUser;
     }
